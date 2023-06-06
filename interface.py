@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 1,
    "id": "da95ce7b-3354-4dc7-8096-3bf7788b4f9d",
    "metadata": {},
    "outputs": [],
@@ -91,15 +91,15 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
-   "id": "69549148-04a3-43c5-b6e1-a6e20abb3e1e",
+   "execution_count": 2,
+   "id": "332630de-83c8-49a3-8bdb-f8b45cb28f29",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "2023-06-06 17:55:20.456 \n",
+      "2023-06-06 17:31:00.736 \n",
       "  \u001b[33m\u001b[1mWarning:\u001b[0m to view this Streamlit app on a browser, run it with the following\n",
       "  command:\n",
       "\n",
@@ -109,33 +109,28 @@
    ],
    "source": [
     "def main():\n",
-    "    st.title(\"ProtKAGG - Seu software de tradução e síntese protéica favorito!\")\n",
+    "    st.title(\"protKAGG - Tradução e Síntese Protéica\")\n",
+    "    st.write(\"Seu software de tradução e síntese protéica favorito!\")\n",
     "\n",
-    "    # Cria uma entrada de texto para a sequência de DNA\n",
     "    dna_sequence = st.text_input(\"Digite a sequência de DNA no formato 5' 3'\")\n",
+    "    dna_sequence = dna_sequence.replace(\" \", \"\")\n",
     "\n",
-    "    # Botão para executar as operações\n",
-    "    if st.button(\"Executar\"):\n",
-    "        # Realiza as operações desejadas\n",
+    "    preview_expander = st.expander(\"Preview\")\n",
+    "    if preview_expander.button(\"Mostrar preview\"):\n",
     "        complemento = complement(dna_sequence)\n",
+    "        st.write(\"Complemento Reverso:\", complemento)\n",
+    "\n",
     "        aminoacidos = translate(dna_sequence)\n",
+    "        st.write(\"Aminoácidos:\", aminoacidos)\n",
+    "\n",
     "        frames = find_frames(dna_sequence)\n",
-    "        blast_results = blast_sequence(dna_sequence)\n",
-    "\n",
-    "        # Exibe os resultados\n",
-    "        st.subheader(\"Complemento Reverso:\")\n",
-    "        st.write(complemento)\n",
-    "\n",
-    "        st.subheader(\"Aminoácidos:\")\n",
-    "        st.write(aminoacidos)\n",
-    "\n",
-    "        st.subheader(\"Frames e ORCs:\")\n",
     "        for frame, data in frames.items():\n",
     "            st.write(f\"Frame {frame}:\")\n",
     "            st.write(\"RNA:\", data['rna'])\n",
     "            st.write(\"Aminoácidos:\", data['aminoacidos'])\n",
     "\n",
-    "        st.subheader(\"Resultados do BLAST:\")\n",
+    "        blast_results = blast_sequence(dna_sequence)\n",
+    "        st.write(\"\\nResultados do BLAST:\")\n",
     "        for result in blast_results:\n",
     "            st.write(\"Nome:\", result['nome'])\n",
     "            st.write(\"Link:\", result['link'])\n",
@@ -146,10 +141,21 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 8,
    "id": "36c628b9-7e20-4dbd-adb5-f053036572d9",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'\\nGCTCCCGGCTTAGAGGACAGCGGGGAAGGCGGGCGGTGGGGCAGGGGGCCTGAAGCGGCGGTACCGGTGC\\nTGGCGGCGGCAGCTGAGGCCTTGGCCGAAGCCGCGCGAACCTCAGGGCAAGATGCTTGGAACCGGACCTG\\nCCGCCGCCACCACCGCTGCCACCACATCTAGCAATGTGAGCGTCCTGCAGCAGTTTGCCAGTGGCCTAAA\\nGAGCCGGAATGAGGAAACCAGGGCCAAAGCCGCCAAGGAGCTCCAGCACTATGTCACCATGGAACTCCGA\\nGAGATGAGTCAAGAGGAGTCTACTCGCTTCTATGACCAACTGAACCATCACATTTTTGAATTGGTTTCCA\\nGCTCAGATGCCAATGAGAGGAAAGGTGGCATCTTGGCCATAGCTAGCCTCATAGGAGTGGAAGGTGGGAA\\nTGCCACCCGAATTGGCAGATTTGCCAACTATCTTCGGAACCTCCTCCCCTCCAATGACCCAGTTGTCATG\\nGAAATGGCATCCAAGGCCATTGGCCGTCTTGCCATGGCAGGGGACACTTTTACCGCTGAGTACGTGGAAT\\nTTGAGGTGAAGCGAGCCCTGGAATGGCTGGGTGCTGACCGCAATGAGGGCCGGAGACATGCAGCTGTCCT\\nGGTTCTCCGTGAGCTGGCCATCAGCGTCCCTACCTTCTTCTTCCAGCAAGTGCAACCCTTCTTTGACAAC\\nATTTTTGTGGCCGTGTGGGACCCCAAACAGGCCATCCGTGAGGGAGCTGTAGCCGCCCTTCGTGCCTGTC\\nTGATTCTCACAACCCAGCGTGAGCCGAAGGAGATGCAGAAGCCTCAGTGGTACAGGCACACATTTGAAGA\\nAGCAGAGAAGGGATTTGATGAGACCTTGGCCAAAGAGAAGGGCATGAATCGGGATGATCGGATCCATGGA\\nGCCTTGTTGATCCTTAACGAGCTGGTCCGAATCAGCAGCATGGAGGGAGAGCGTCTGAGAGAAGAAATGG\\nAAGAAATCACACAGCAGCAGCTGGTACACGACAAGTACTGCAAAGATCTCATGGGCTTCGGAACAAAACC\\nTCGTCACATTACCCCCTTCACCAGTTTCCAGGCTGTACAGCCCCAGCAGTCAAATGCCTTGGTGGGGCTG\\nCTGGGGTACAGCTCTCACCAAGGCCTCATGGGATTTGGGACCTCCCCCAGTCCAGCTAAGTCCACCCTGG\\nTGGAGAGCCGGTGTTGCAGAGACTTGATGGAGGAGAAATTTGATCAGGTGTGCCAGTGGGTGCTGAAATG\\nCAGGAATAGCAAGAACTCGCTGATCCAAATGACAATCCTTAATTTGTTGCCCCGCTTGGCTGCATTCCGA\\nCCTTCTGCCTTCACAGATACCCAGTATCTCCAAGATACCATGAACCATGTCCTAAGCTGTGTCAAGAAGG\\nAGAAGGAACGTACAGCGGCCTTCCAAGCCCTGGGGCTACTTTCTGTGGCTGTGAGGTCTGAGTTTAAGG'"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "\"\"\"\n",
     "GCTCCCGGCTTAGAGGACAGCGGGGAAGGCGGGCGGTGGGGCAGGGGGCCTGAAGCGGCGGTACCGGTGC\n",
@@ -174,6 +180,14 @@
     "CCTTCTGCCTTCACAGATACCCAGTATCTCCAAGATACCATGAACCATGTCCTAAGCTGTGTCAAGAAGG\n",
     "AGAAGGAACGTACAGCGGCCTTCCAAGCCCTGGGGCTACTTTCTGTGGCTGTGAGGTCTGAGTTTAAGG\"\"\""
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c315ad62-0ffa-4556-8d53-6319774b62e8",
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {
